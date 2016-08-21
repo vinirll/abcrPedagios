@@ -1,4 +1,4 @@
-var NEW_SHEET_NAME = "teste01";
+var NEW_SHEET_NAME = "teste03";
 var MY_TARIFF_SHEET = 0;
 var DEBUG = true;
 var MY_INTEREST_RANGE = "A1:U755";
@@ -10,7 +10,9 @@ var SQUARE_LABEL = "Praça";
 var ROAD_LABEL   = "Rodovia";
 
 var globalHeaders = {};
-var idxCounters = 2;
+globalHeaders["Concessionaria"] = 0;
+globalHeaders["Rodovia"] = 1;
+var idxCounters = 1;
 
 function main() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -66,7 +68,9 @@ function main() {
     }
   }
   
-  createNewSheet(newData);
+  var headers = Object.keys(globalHeaders);
+  
+  createNewSheet(newData,headers);
   
 }
 
@@ -102,10 +106,12 @@ function removeUnecessaryColumns(mSheet,positions) {
     mSheet.deleteColumn(positions[i]);
 }
 
-function createNewSheet( newData ) {
-   var ss = SpreadsheetApp.getActiveSpreadsheet();
-   var newSheet = ss.insertSheet(NEW_SHEET_NAME,1);
+function createNewSheet( newData , headers ) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var newSheet = ss.insertSheet(NEW_SHEET_NAME,1);
   
-   for(row in newData)
-     newSheet.appendRow(newData[row]);
+  newSheet.appendRow(headers);
+  
+  for(row in newData)
+    newSheet.appendRow(newData[row]);
 }
