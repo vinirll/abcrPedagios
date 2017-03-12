@@ -1,4 +1,4 @@
-var NEW_SHEET_NAME = "teste03";
+var NEW_SHEET_NAME = "run05";
 var MY_TARIFF_SHEET = 0;
 var DEBUG = true;
 var MY_INTEREST_RANGE = "A1:U755";
@@ -25,6 +25,7 @@ function main() {
   var tempHeaderGuide = {};
   var currentConcessionaire, currentRoad = null;
   
+  
   for (row in sheetData) {
     var rowIdx = Number(row);    
     var tempNewRow = [];
@@ -47,13 +48,33 @@ function main() {
       tempHeaderGuide = {};
       for(col in sheetData[rowIdx])
       {
+        Logger.log("**** " + col)
         var colValue = sheetData[rowIdx][col].toLowerCase().replace(/\s{2,}/g, ' ').replace(/motocicletas/g,'motocicleta');
         if (colValue !== "")
         {
-          if ( typeof globalHeaders[colValue] === "undefined"  )
-            globalHeaders[colValue] = ++idxCounters;
-          
-          tempHeaderGuide[col] = globalHeaders[colValue];
+          if (colValue.match(/(caminhão) - (ônibus) (.+)/)) {
+            // hotfix to support caminhão and ônibus from same cell
+            var myRegexp = /(caminhão) - (ônibus) (.+)/;
+            var match = myRegexp.exec(colValue)
+            var truckLabel = match[1] + " " + match[3]
+            var busLabel = match[2] + " " + match[3]
+            
+            if ( typeof globalHeaders[truckLabel] === "undefined"  )
+              globalHeaders[truckLabel] = ++idxCounters;
+            
+            if ( typeof globalHeaders[busLabel] === "undefined"  )
+              globalHeaders[busLabel] = ++idxCounters;
+            
+            tempHeaderGuide[col] = globalHeaders[truckLabel];
+          }
+          else {
+            // normal flow
+            if ( typeof globalHeaders[colValue] === "undefined"  )
+            {
+              globalHeaders[colValue] = ++idxCounters;
+            }
+            tempHeaderGuide[col] = globalHeaders[colValue];
+          }
         }
       }
     }
